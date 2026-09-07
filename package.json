@@ -1,0 +1,65 @@
+{
+  "name": "phaser-game-template",
+  "private": true,
+  "type": "module",
+  "description": "A Phaser 4 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
+  "version": "1.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phaserjs/template-react-ts.git"
+  },
+  "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "bugs": {
+    "url": "https://github.com/phaserjs/template-react-ts/issues"
+  },
+  "homepage": "https://github.com/phaserjs/template-react-ts#readme",
+  "keywords": [
+    "phaser",
+    "phaser4",
+    "react",
+    "vite",
+    "typescript"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^13.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "embla-carousel-react": "^8.6.0",
+    "input-otp": "^1.5.0",
+    "lucide-react": "^1.41.0",
+    "next-themes": "^0.4.6",
+    "phaser": "4.2.1",
+    "radix-ui": "^1.6.7",
+    "react": "^19.0.0",
+    "react-day-picker": "^9.7.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.87.0",
+    "react-resizable-panels": "^4.12.4",
+    "recharts": "^2.15.4",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.6.0",
+    "vaul": "^1.1.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "puppeteer-core": "^22.0.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1",
+    "vite-plugin-checker": "^0.14.5"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.25.12": true
+  }
+}
