@@ -203,6 +203,76 @@ const THEME_RIVER: Theme = {
     grass: 0x52b788, grassCap: 0xb7e4c7, dirt: 0x8d6e63, dirtDark: 0x4e342e,
     bgCss: '#0077b6',
 };
+const THEME_THUNDER: Theme = {
+    skyTop: 0x33415c, skyBottom: 0x111827,
+    hillFar: 0x5c677d, hillMid: 0x33415c, hillNear: 0x1b263b,
+    grass: 0xe09f3e, grassCap: 0xffd166, dirt: 0x4a4e69, dirtDark: 0x22223b,
+    bgCss: '#111827',
+};
+const THEME_ANCESTOR: Theme = {
+    skyTop: 0x9c6644, skyBottom: 0x582f0e,
+    hillFar: 0xddb892, hillMid: 0xb08968, hillNear: 0x606c38,
+    grass: 0x7f4f24, grassCap: 0xdda15e, dirt: 0x6f4518, dirtDark: 0x3b240d,
+    bgCss: '#582f0e',
+};
+const THEME_SKY_SHRINE: Theme = {
+    skyTop: 0x90e0ef, skyBottom: 0x4361ee,
+    hillFar: 0xcaf0f8, hillMid: 0x48cae4, hillNear: 0x3a0ca3,
+    grass: 0x4cc9f0, grassCap: 0xf1faee, dirt: 0x3f37c9, dirtDark: 0x240046,
+    bgCss: '#4361ee',
+};
+const THEME_DROUGHT_END: Theme = {
+    skyTop: 0xf4a261, skyBottom: 0xe76f51,
+    hillFar: 0xe9c46a, hillMid: 0xf4a261, hillNear: 0x2a9d8f,
+    grass: 0x40916c, grassCap: 0x95d5b2, dirt: 0x9c6644, dirtDark: 0x582f0e,
+    bgCss: '#e76f51',
+};
+const THEME_RETURN: Theme = {
+    skyTop: 0x80ed99, skyBottom: 0x168aad,
+    hillFar: 0xb5e48c, hillMid: 0x52b69a, hillNear: 0x184e77,
+    grass: 0x34a0a4, grassCap: 0xd9ed92, dirt: 0x386641, dirtDark: 0x1b4332,
+    bgCss: '#168aad',
+};
+
+function createGuardianTrial(id: number, name: string, target: number, theme: Theme, variant: number): LevelDef {
+    const platformCount = 20 + variant;
+    const heightPatterns = [
+        [420, 410, 340, 270, 350, 280, 210, 300],
+        [420, 350, 280, 200, 290, 370, 300, 230],
+        [400, 320, 240, 170, 250, 330, 260, 190],
+        [430, 360, 290, 220, 300, 380, 310, 240],
+        [390, 310, 230, 150, 240, 320, 250, 180],
+    ];
+    const heights = heightPatterns[variant];
+    const platforms: Plat[] = [{ x: 0, y: 480, w: 290, h: 120 }];
+    for (let i = 0; i < platformCount; i++) {
+        const y = heights[i % heights.length];
+        platforms.push({ x: 390 + i * 210, y, w: 120, h: WORLD_H - y });
+    }
+    const finalX = 390 + platformCount * 210;
+    platforms.push({ x: finalX, y: 400, w: 360, h: 200 });
+
+    const apples: Array<[number, number]> = [[120, 430], [240, 430]];
+    for (const platform of platforms.slice(1, -1)) {
+        if (apples.length < target) apples.push([platform.x + 32, platform.y - 48]);
+        if (apples.length < target) apples.push([platform.x + 88, platform.y - 48]);
+    }
+
+    const saws: Array<[number, number, number, number]> = platforms.slice(1, -1)
+        .filter((_, index) => index % 2 === variant % 2)
+        .map((platform, index) => [platform.x + 48, platform.y - 35, 38 + (index % 3) * 6, Math.max(620, 820 - variant * 35)]);
+    const trampolines: Array<[number, number]> = platforms.slice(2, -1)
+        .filter((_, index) => index % 5 === 0)
+        .map((platform) => [platform.x + platform.w / 2, platform.y - 14]);
+    const falling: Array<[number, number]> = platforms.slice(1, -2)
+        .filter((_, index) => index % 3 === 1)
+        .map((platform, index) => [platform.x + platform.w + 45, Math.max(90, platform.y - 75 - (index % 2) * 20)]);
+
+    return {
+        id, name, worldW: finalX + 360, target, theme, platforms, apples, saws,
+        trampolines, falling, flag: [finalX + 210, 400], spawn: [80, 400],
+    };
+}
 
 export const LEVELS: LevelDef[] = [
     {
@@ -530,6 +600,11 @@ export const LEVELS: LevelDef[] = [
         falling: [[520, 170], [720, 120], [1110, 130], [1500, 100], [1700, 130], [1930, 150], [2330, 120], [2730, 80], [3120, 130], [3350, 110], [3750, 140], [3950, 170]],
         flag: [4380, 400],
     },
+    createGuardianTrial(10, 'Thunder Plains', 40, THEME_THUNDER, 0),
+    createGuardianTrial(11, "Ancestor's Crossing", 42, THEME_ANCESTOR, 1),
+    createGuardianTrial(12, 'Sky Shrine', 44, THEME_SKY_SHRINE, 2),
+    createGuardianTrial(13, "Drought's End", 46, THEME_DROUGHT_END, 3),
+    createGuardianTrial(14, "Guardian's Return", 48, THEME_RETURN, 4),
 ];
 
 export const LEVEL_COUNT = LEVELS.length;
