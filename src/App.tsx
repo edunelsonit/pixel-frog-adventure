@@ -11,7 +11,7 @@ export interface IRefPhaserGame {
 type Phase = 'MENU' | 'COUNTDOWN' | 'PLAYING' | 'PAUSED' | 'FINISHED';
 
 interface WinResult {
-    level: number; fruits: number; target: number; time: number;
+    level: number; fruits: number; coins: number; target: number; time: number;
     stars: number; score: number; hasNextLevel: boolean;
 }
 
@@ -38,6 +38,7 @@ function App() {
 
     const [phase, setPhase] = useState<Phase>('MENU');
     const [fruits, setFruits] = useState(0);
+    const [coins, setCoins] = useState(0);
     const [target, setTarget] = useState(LEVELS[0].target);
     const [score, setScore] = useState(0);
     const [lives, setLives] = useState(MAX_LIVES);
@@ -85,8 +86,8 @@ function App() {
     // Subscribe to scene -> React state events.
     useEffect(() => {
         const onPhase = (p: Phase) => setPhase(p);
-        const onScore = (d: { fruits: number; target: number; score: number }) => {
-            setFruits(d.fruits); setTarget(d.target); setScore(d.score);
+        const onScore = (d: { fruits: number; coins: number; target: number; score: number }) => {
+            setFruits(d.fruits); setCoins(d.coins); setTarget(d.target); setScore(d.score);
         };
         const onLives = (d: { lives: number }) => setLives(d.lives);
         const onTimer = (d: { time: number }) => setTime(d.time);
@@ -182,6 +183,7 @@ function App() {
                                 <span className="fruit-dot" /> {fruits}
                                 <span className="hud-dim"> / {target}</span>
                             </div>
+                            <div className="hud-coin"><span className="coin-dot">●</span> {coins}</div>
                         </div>
                         <div className="hud-center">
                             <span className="hud-score">{score}</span>
@@ -227,7 +229,7 @@ function App() {
                 {phase === 'MENU' && !showStory && (
                     <div className="overlay center menu">
                         <div className="panel">
-                            <h1 className="title">Pixel Frog <span>Adventure</span></h1>
+                            <h1 className="title">The Rain <span>Guardian</span></h1>
                             <p className="subtitle">A precision platformer. Collect apples, dodge saws, reach the flag.</p>
 
                             <div className="level-select">
@@ -295,6 +297,7 @@ function App() {
                                 ))}
                             </div>
                             <div className="stat-row"><span>Apples</span><b>{win.fruits} / {win.target}</b></div>
+                            <div className="stat-row"><span>Coins</span><b>{win.coins}</b></div>
                             <div className="stat-row"><span>Time</span><b>{fmtTime(win.time)}</b></div>
                             <div className="stat-row"><span>Score</span><b>{win.score}</b></div>
                             {allBeaten ? (
