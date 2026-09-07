@@ -498,7 +498,7 @@ body,
 
 .level-tabs {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
     width: 100%;
 }
@@ -598,6 +598,8 @@ body,
     .countdown-num { font-size: 96px; }
     .lt-name { display: none; }
     .hud-level-badge .lvl-name { display: none; }
+    .menu .panel { max-height: calc(100dvh - 24px); overflow-y: auto; }
+    .level-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .story-panel { min-height: 440px; padding: 24px 20px; }
     .story-art { width: 72px; height: 72px; font-size: 38px; }
     .story-title { font-size: 27px; }
