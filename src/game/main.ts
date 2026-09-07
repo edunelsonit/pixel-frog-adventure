@@ -36,6 +36,8 @@ export const COLORS = {
     PUPIL: 0x212121,
     APPLE: 0xe53935,
     APPLE_STEM: 0x6d4c41,
+    COIN: 0xffd54f,
+    COIN_DARK: 0xf59e0b,
     SAW: 0xb0bec5,
     SAW_DARK: 0x546e7a,
     FLAG_POLE: 0xcfd8dc,
@@ -597,6 +599,14 @@ function makeTextures(scene: Scene): void {
     g.fillStyle(0xffffff, 0.5); g.fillCircle(12, 15, 3);
     g.generateTexture('apple', 32, 32);
 
+    // Coin
+    g.clear();
+    g.fillStyle(COLORS.COIN_DARK, 1); g.fillCircle(16, 16, 11);
+    g.fillStyle(COLORS.COIN, 1); g.fillCircle(16, 16, 8);
+    g.lineStyle(2, 0xfff3b0, 0.9); g.strokeCircle(16, 16, 6);
+    g.fillStyle(0xfff8dc, 0.85); g.fillRoundedRect(13, 9, 4, 14, 2);
+    g.generateTexture('coin', 32, 32);
+
     // Collect burst
     g.clear();
     g.fillStyle(0xffee58, 1);
@@ -697,6 +707,7 @@ export class Game extends Scene {
     private player!: Phaser.Physics.Arcade.Sprite;
     private platforms!: Phaser.Physics.Arcade.StaticGroup;
     private apples!: Phaser.Physics.Arcade.StaticGroup;
+    private coins!: Phaser.Physics.Arcade.StaticGroup;
     private saws!: Phaser.Physics.Arcade.Group;
     private trampolines!: Phaser.Physics.Arcade.StaticGroup;
     private falling!: Phaser.Physics.Arcade.Group;
@@ -718,6 +729,7 @@ export class Game extends Scene {
     private level: LevelDef = LEVELS[0];
     private lives = MAX_LIVES;
     private fruits = 0;
+    private coinsCollected = 0;
     private elapsed = 0;
     private invulnUntil = 0;
     private jumpsUsed = 0;
@@ -827,6 +839,7 @@ export class Game extends Scene {
         if (this.flagObj) { this.flagObj.destroy(); this.flagObj = null; }
         this.platforms?.clear(true, true);
         this.apples?.clear(true, true);
+        this.coins?.clear(true, true);
         this.trampolines?.clear(true, true);
         this.saws?.clear(true, true);
         this.falling?.clear(true, true);
@@ -913,6 +926,7 @@ export class Game extends Scene {
 
         this.platforms = this.physics.add.staticGroup();
         this.apples = this.physics.add.staticGroup();
+        this.coins = this.physics.add.staticGroup();
         this.trampolines = this.physics.add.staticGroup();
         this.saws = this.physics.add.group({ allowGravity: false, immovable: true });
         this.falling = this.physics.add.group({ allowGravity: false, immovable: true });
@@ -935,6 +949,18 @@ export class Game extends Scene {
             const a = this.apples.create(ax, ay, 'apple');
             a.setData('collected', false);
             this.tweens.add({ targets: a, y: ay - 6, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+        }
+
+        // Place optional bonus coins above alternating platforms. Apples remain
+        // the level objective; every coin adds 250 points.
+        const coinPositions = L.platforms
+            .slice(1, -1)
+            .filter((_, index) => index % 2 === 0)
+            .map((platform) => [platform.x + platform.w / 2, platform.y - 38] as const);
+        for (const [cx, cy] of coinPositions) {
+            const coin = this.coins.create(cx, cy, 'coin');
+            coin.setData('collected', false);
+            this.tweens.add({ targets: coin, scaleX: 0.3, duration: 500, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
         }
 
         for (const [sx, sy, rangeX, speed] of L.saws) {
@@ -966,6 +992,7 @@ export class Game extends Scene {
             this.physics.add.collider(this.player, this.platforms),
             this.physics.add.collider(this.player, this.falling, this.onLandFalling, undefined, this),
             this.physics.add.overlap(this.player, this.apples, this.collectFruit, undefined, this) as unknown as Phaser.Physics.Arcade.Collider,
+            this.physics.add.overlap(this.player, this.coins, this.collectCoin, undefined, this) as unknown as Phaser.Physics.Arcade.Collider,
             this.physics.add.overlap(this.player, this.saws, this.handleDamage, undefined, this) as unknown as Phaser.Physics.Arcade.Collider,
             this.physics.add.overlap(this.player, this.trampolines, this.onTrampoline, undefined, this) as unknown as Phaser.Physics.Arcade.Collider,
         );
@@ -1046,13 +1073,14 @@ export class Game extends Scene {
     private resetRun() {
         this.lives = MAX_LIVES;
         this.fruits = 0;
+        this.coinsCollected = 0;
         this.elapsed = 0;
         this.finished = false;
         this.checkpointX = this.level.spawn[0];
         this.checkpointY = this.level.spawn[1];
         this.invulnUntil = 0;
         this.jumpsUsed = 0;
-        EventBus.emit(EVT.SCORE_UPDATED, { fruits: 0, target: this.level.target, score: 0 });
+        EventBus.emit(EVT.SCORE_UPDATED, { fruits: 0, coins: 0, target: this.level.target, score: 0 });
         EventBus.emit(EVT.LIVES_UPDATED, { lives: this.lives });
         EventBus.emit(EVT.TIMER_UPDATED, { time: 0 });
         this.player.enableBody(true, this.checkpointX, this.checkpointY, true, true);
@@ -1062,6 +1090,11 @@ export class Game extends Scene {
             const a = ch as Phaser.Physics.Arcade.Sprite;
             a.enableBody(true, a.x, a.y, true, true);
             a.setData('collected', false);
+        }
+        for (const ch of this.coins.getChildren()) {
+            const coin = ch as Phaser.Physics.Arcade.Sprite;
+            coin.enableBody(true, coin.x, coin.y, true, true);
+            coin.setData('collected', false);
         }
     }
 
@@ -1100,7 +1133,20 @@ export class Game extends Scene {
         this.levelObjects.push(burst);
         this.tweens.add({ targets: burst, scale: 2, alpha: 0, duration: 260, onComplete: () => burst.destroy() });
         this.safePlay('sfx_collect');
-        EventBus.emit(EVT.SCORE_UPDATED, { fruits: this.fruits, target: this.level.target, score: this.fruits * 100 });
+        EventBus.emit(EVT.SCORE_UPDATED, { fruits: this.fruits, coins: this.coinsCollected, target: this.level.target, score: this.fruits * 100 + this.coinsCollected * 250 });
+    }
+
+    private collectCoin(_p: unknown, obj: unknown) {
+        const coin = obj as Phaser.Physics.Arcade.Sprite;
+        if (!coin || coin.getData('collected')) return;
+        coin.setData('collected', true);
+        coin.disableBody(true, true);
+        this.coinsCollected += 1;
+        const burst = this.add.image(coin.x, coin.y, 'collect_fx').setDepth(11);
+        this.levelObjects.push(burst);
+        this.tweens.add({ targets: burst, scale: 1.7, alpha: 0, duration: 220, onComplete: () => burst.destroy() });
+        this.safePlay('sfx_collect');
+        EventBus.emit(EVT.SCORE_UPDATED, { fruits: this.fruits, coins: this.coinsCollected, target: this.level.target, score: this.fruits * 100 + this.coinsCollected * 250 });
     }
 
     private handleDamage(_p: unknown, _obj: unknown) {
@@ -1146,7 +1192,7 @@ export class Game extends Scene {
         this.safePlay('sfx_win');
         const pct = this.fruits / this.level.target;
         const stars = pct >= 1 ? 3 : pct >= 0.7 ? 2 : 1;
-        const score = this.fruits * 100 + Math.max(0, 3000 - Math.floor(this.elapsed)) + stars * 500;
+        const score = this.fruits * 100 + this.coinsCollected * 250 + Math.max(0, 3000 - Math.floor(this.elapsed)) + stars * 500;
         const hasNextLevel = this.levelId < LEVEL_COUNT;
 
         const save = loadSave();
@@ -1167,6 +1213,7 @@ export class Game extends Scene {
         EventBus.emit(EVT.GAME_WIN, {
             level: this.levelId,
             fruits: this.fruits,
+            coins: this.coinsCollected,
             target: this.level.target,
             time: Math.floor(this.elapsed),
             stars,
@@ -1182,9 +1229,10 @@ export class Game extends Scene {
         this.running = false;
         this.safePlay('sfx_gameover');
         const save = loadSave();
-        save.bestScore = Math.max(save.bestScore, this.fruits * 100);
+        const runScore = this.fruits * 100 + this.coinsCollected * 250;
+        save.bestScore = Math.max(save.bestScore, runScore);
         writeSave(save);
-        EventBus.emit(EVT.GAME_OVER, { score: this.fruits * 100, level: this.levelId });
+        EventBus.emit(EVT.GAME_OVER, { score: runScore, level: this.levelId });
         this.setPhase('FINISHED');
     }
 
