@@ -1,8 +1,8 @@
-# Pixel Frog Adventure
+# The Rain Guardian
 
 ## The Legend of the River Guardian
 
-Pixel Frog Adventure is a fast, skill-based platform game starring Kito, a small green frog on a mission to restore water and hope to his drought-stricken homeland. It combines arcade precision, handcrafted challenges, collectible objectives, and an African-inspired story.
+The Rain Guardian is a fast, skill-based platform game starring Kito, a small green frog on a mission to restore water and hope to his drought-stricken homeland. It combines arcade precision, handcrafted challenges, collectible objectives, and an African-inspired story.
 
 The adventure contains nine progressively challenging levels, ending with **Rainmaker Ascent** and the final **River Guardian** trial.
 
@@ -27,6 +27,7 @@ Using the strength of the earth, the timing of the wind, and the courage of his 
 - Use trampolines to reach higher ground.
 - Move quickly across falling platforms before they disappear.
 - Collect the required number of sacred apples in every level.
+- Find bonus coins across every stage; each coin adds 250 points.
 - Reach the shrine flag before time expires or all lives are lost.
 - Earn up to three stars based on performance.
 - Unlock new levels and improve earlier results through persistent progress tracking.
