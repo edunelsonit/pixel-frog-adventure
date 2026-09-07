@@ -128,6 +128,27 @@ body,
     box-shadow: 0 0 6px rgba(229, 57, 53, 0.7);
 }
 
+.hud-coin {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gold);
+    font-weight: 800;
+}
+
+.coin-dot {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f59e0b;
+    border-radius: 50%;
+    color: #fff3b0;
+    background: var(--gold);
+    font-size: 6px;
+    box-shadow: 0 0 7px rgba(251, 191, 36, 0.55);
+}
+
 .hud-dim {
     color: var(--dim);
     font-weight: 600;
