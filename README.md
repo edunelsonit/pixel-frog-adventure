@@ -4,6 +4,8 @@
 
 Pixel Frog Adventure is a fast, skill-based platform game starring Kito, a small green frog on a mission to restore water and hope to his drought-stricken homeland. It combines arcade precision, handcrafted challenges, collectible objectives, and an African-inspired story.
 
+The adventure contains nine progressively challenging levels, ending with **Rainmaker Ascent** and the final **River Guardian** trial.
+
 ## The Story
 
 In the warm heartlands of Africa, where golden savanna rises toward misty highlands, Kito listens beside the sacred river as the elders recount the memories carried by its water. Every apple growing near the river is said to be a blessing from the sky.
