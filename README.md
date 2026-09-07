@@ -4,7 +4,7 @@
 
 The Rain Guardian is a fast, skill-based platform game starring Kito, a small green frog on a mission to restore water and hope to his drought-stricken homeland. It combines arcade precision, handcrafted challenges, collectible objectives, and an African-inspired story.
 
-The adventure contains nine progressively challenging levels, ending with **Rainmaker Ascent** and the final **River Guardian** trial.
+The adventure contains fourteen progressively challenging levels. The five newest late-game trials are **Thunder Plains**, **Ancestor's Crossing**, **Sky Shrine**, **Drought's End**, and the final **Guardian's Return**.
 
 ## The Story
 
