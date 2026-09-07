@@ -302,7 +302,7 @@ function App() {
                             <div className="stat-row"><span>Score</span><b>{win.score}</b></div>
                             {allBeaten ? (
                                 <>
-                                    <p className="subtitle">You mastered all nine levels and restored the sacred river. Guardian of the Rain! 🐸</p>
+                                    <p className="subtitle">You mastered all fourteen levels and restored the sacred river. Guardian of the Rain! 🐸</p>
                                     <button className="btn primary" onClick={() => startLevel(1)}>↻ Play Again</button>
                                     <button className="btn" onClick={goMenu}>Menu</button>
                                 </>
